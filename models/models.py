@@ -15,3 +15,25 @@ class Book(Document):
     class Settings:
         """The class with the settings for the Book class"""
         name = "books_collection"
+
+    class Config:
+        """The config class for Book"""
+        schema_extra = {
+            "example": {
+                "title": "The Lord of the Rings",
+                "author": "J.R.R. Tolkien",
+                "published_date": 1954,
+                "reviews": [
+                    "Great book!",
+                    "Very informative!",
+                    "Would make for a great movie franchise"
+                ]
+            }
+        }
+
+
+class UpdateBook(BaseModel):
+    """The schema used to update the book"""
+    title: Optional[str]
+    author: Optional[str]
+    published_date: Optional[int]
