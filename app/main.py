@@ -1,5 +1,6 @@
 """The main script for the application"""
 from fastapi import FastAPI
+from database.db import init_db
 
 
 app = FastAPI(
@@ -7,6 +8,12 @@ app = FastAPI(
     description="Backend for the Books App",
     version="0.1.0"
 )
+
+
+@app.on_event("startup")
+async def app_startup():
+    """Logic to run on app startup"""
+    await init_db()
 
 
 @app.get("/")
