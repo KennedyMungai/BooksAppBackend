@@ -14,7 +14,7 @@ class Book(Document):
 
     class Settings:
         """The class with the settings for the Book class"""
-        name = "books_document"
+        name = "books_collection"
 
     class Config:
         """The config class for Book"""
