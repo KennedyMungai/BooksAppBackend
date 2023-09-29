@@ -1,8 +1,7 @@
 """The Books Route Logic"""
-from fastapi import APIRouter, HTTPException, status
-from models.models import Book
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI, HTTPException, status
 
+from models.models import Book
 
 books_router = APIRouter(prefix="/books", tags=["Books"])
 
