@@ -37,7 +37,7 @@ async def retrieve_all_books() -> List[Book]:
 
 
 @books_router.get(
-    "/{id}",
+    "/{_id}",
     status_code=status.HTTP_200_OK,
     response_model=Book
 )
@@ -62,7 +62,7 @@ async def retrieve_book_by_id(_id: PydanticObjectId) -> Book:
 
 
 @books_router.put(
-    "/{id}",
+    "/{_id}",
     status_code=status.HTTP_200_OK,
     response_model=Book
 )
@@ -93,3 +93,27 @@ async def update_book(_id: PydanticObjectId, book_data: UpdateBook):
     updated_book = await Book.get(_id)
 
     return updated_book
+
+
+@books_router.delete("/{_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_single_book(_id: PydanticObjectId) -> None:
+    """The endpoint to delete a single book
+
+    Args:
+        _id (PydanticObjectModel): The id of the book to be deleted 
+
+    Raises:
+        HTTPException: A 404 is raised of the book os not found
+
+    Returns:
+        None: Returns nothing
+    """
+    book = await Book.get(_id)
+
+    if not book:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="The book was not found")
+
+    await book.delete()
+
+    return None
