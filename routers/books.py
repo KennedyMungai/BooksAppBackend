@@ -1,9 +1,11 @@
 """The Books Route Logic"""
 from typing import List
-from fastapi import APIRouter, FastAPI, HTTPException, status
-from beanie import PydanticObjectId
 
-from models.models import Book
+from beanie import PydanticObjectId
+from fastapi import APIRouter, HTTPException, status
+
+from models.models import Book, UpdateBook
+from utils.utilities import encode_input
 
 books_router = APIRouter(prefix="/books", tags=["Books"])
 
@@ -39,7 +41,7 @@ async def retrieve_all_books() -> List[Book]:
     status_code=status.HTTP_200_OK,
     response_model=Book
 )
-async def retrieve_book_by_id(id: PydanticObjectId) -> Book:
+async def retrieve_book_by_id(_id: PydanticObjectId) -> Book:
     """The endpoint to retrieve a book by its i
 
     Args:
@@ -51,9 +53,43 @@ async def retrieve_book_by_id(id: PydanticObjectId) -> Book:
     Returns:
         Book: The book whose id is the argument
     """
-    book = await Book.get(id)
+    book = await Book.get(_id)
 
     if not book:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
     return book
+
+
+@books_router.put(
+    "/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=Book
+)
+async def update_book(_id: PydanticObjectId, book_data: UpdateBook):
+    """The function endpoint for updating books
+
+    Args:
+        _id (PydanticObjectId): The id of the book being updated
+        book_data (UpdateBook): The data used to update the book
+
+    Raises:
+        HTTPException: A 404 is raised if the book is not found
+
+    Returns:
+        Book: The updated book
+    """
+    book = await Book.get(_id)
+
+    if not book:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The book was not found"
+        )
+
+    book_data = encode_input(book_data)
+    _ = await book.update(**book_data)
+
+    updated_book = await Book.get(_id)
+
+    return updated_book
